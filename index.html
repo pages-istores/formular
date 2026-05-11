@@ -7,55 +7,98 @@
 
 <style>
     body {
-        font-family: Arial, sans-serif;
-        background: #f5f5f5;
+        font-family: "Inter", Arial, sans-serif;
+        background: linear-gradient(135deg, #eef2f7, #d9e2ec);
         margin: 0;
         padding: 40px;
+        color: #1f2937;
     }
+
     .container {
-        max-width: 600px;
+        max-width: 650px;
         margin: auto;
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.08);
     }
+
     .question {
         display: none;
     }
+
     .question.active {
         display: block;
+        animation: fadeIn 0.4s ease;
     }
-    button {
-        padding: 12px 20px;
-        margin-top: 20px;
-        background: #0070f3;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 16px;
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-    button:hover {
-        background: #0059c1;
+
+    h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 28px;
+        font-weight: 700;
     }
+
+    h3 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
     .answers button {
         display: block;
         width: 100%;
+        padding: 14px 20px;
         margin: 10px 0;
-        background: #eaeaea;
-        color: black;
+        background: #f3f4f6;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
     }
+
     .answers button:hover {
-        background: #d5d5d5;
+        background: #e5e7eb;
+        border-color: #d1d5db;
     }
+
+    button.main {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 14px 20px;
+        border-radius: 10px;
+        font-size: 17px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+        transition: 0.2s;
+    }
+
+    button.main:hover {
+        background: #1d4ed8;
+    }
+
     input {
         width: 100%;
-        padding: 12px;
-        margin-top: 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
+        padding: 14px;
+        border-radius: 10px;
+        border: 2px solid #e5e7eb;
         font-size: 16px;
+        margin-top: 10px;
+        transition: 0.2s;
+    }
+
+    input:focus {
+        border-color: #2563eb;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
     }
 </style>
 </head>
@@ -89,7 +132,7 @@
     <div class="question" id="q3">
         <h3>3. Název společnosti:</h3>
         <input type="text" placeholder="Zadejte název společnosti" oninput="answers.nazev_spolecnosti = this.value">
-        <button onclick="nextQuestion()">Pokračovat</button>
+        <button class="main" onclick="nextQuestion()">Pokračovat</button>
     </div>
 
     <!-- 4 -->
@@ -117,21 +160,18 @@
     <div class="question" id="q6">
         <h3>6. Vaše jméno:</h3>
         <input type="text" placeholder="Zadejte své jméno" oninput="answers.jmeno = this.value">
-        <button onclick="nextQuestion()">Pokračovat</button>
+        <button class="main" onclick="nextQuestion()">Pokračovat</button>
     </div>
 
     <!-- 7 -->
     <div class="question" id="q7">
         <h3>7. Váš e‑mail:</h3>
         <input type="email" placeholder="Zadejte svůj e‑mail" oninput="answers.email = this.value">
-        <button onclick="finish()">Odeslat</button>
+        <button class="main" onclick="finish()">Odeslat</button>
     </div>
 
     <!-- Výsledek -->
-    <div class="question" id="result">
-        <h3>Děkujeme!</h3>
-        <p>Vaše odpovědi byly odeslány.</p>
-    </div>
+    <div class="question" id="result"></div>
 </div>
 
 <script>
@@ -149,15 +189,28 @@ function nextQuestion() {
     document.getElementById("q" + current).classList.add("active");
 }
 
+function evaluate(answers) {
+    if (answers.pocet_zamestnancu === "1–10" && answers.pocet_zarizeni === "1–10") return "A";
+    if (answers.pocet_zamestnancu === "11–50" || answers.pocet_zarizeni === "11–50") return "B";
+    return "C";
+}
+
 function finish() {
-    fetch("/api/send-email", {
+    fetch("/api/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(answers)
     });
 
+    const result = evaluate(answers);
+
     document.getElementById("q" + current).classList.remove("active");
-    document.getElementById("result").classList.add("active");
+    const resultBox = document.getElementById("result");
+    resultBox.classList.add("active");
+
+    if (result === "A") resultBox.innerHTML = "<h3>Výsledek: A</h3><p>Malá firma.</p>";
+    if (result === "B") resultBox.innerHTML = "<h3>Výsledek: B</h3><p>Střední firma.</p>";
+    if (result === "C") resultBox.innerHTML = "<h3>Výsledek: C</h3><p>Velká firma.</p>";
 }
 </script>
 
