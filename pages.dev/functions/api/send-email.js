@@ -12,7 +12,7 @@ export async function onRequestPost(context) {
                 subject: "Nová odpověď z firemního dotazníku"
             }
         ],
-        from: { email: "no-reply@logicworks.cz" },
+        from: { email: "no-reply@pages.dev", name: "Firemní formulář" }
         content: [
             {
                 type: "text/plain",
