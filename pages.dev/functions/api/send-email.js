@@ -12,7 +12,10 @@ export async function onRequestPost(context) {
                 subject: "Nová odpověď z firemního dotazníku"
             }
         ],
-        from: { email: "no-reply@pages.dev", name: "Firemní formulář" }
+        from: { 
+            email: "no-reply@pages.dev", 
+            name: "Firemní formulář" 
+        }, // ← TADY MUSÍ BÝT ČÁRKA
         content: [
             {
                 type: "text/plain",
