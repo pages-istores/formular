@@ -100,6 +100,22 @@
         outline: none;
         box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
     }
+
+    .error {
+        color: #b91c1c;
+        margin-top: 8px;
+        font-size: 14px;
+        display: none;
+    }
+
+    #companyName {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: #f3f4f6;
+        font-size: 15px;
+        display: none;
+    }
 </style>
 </head>
 
@@ -107,9 +123,18 @@
 <div class="container">
     <h2>Firemní dotazník</h2>
 
-    <!-- 1 -->
+    <!-- 1 – NOVÁ OTÁZKA NA IČO -->
     <div class="question active" id="q1">
-        <h3>1. Co Vaše firma zajišťuje?</h3>
+        <h3>1. IČO společnosti:</h3>
+        <input type="text" id="icoInput" placeholder="Zadejte IČO (8 číslic)">
+        <div class="error" id="icoError"></div>
+        <div id="companyName"></div>
+        <button class="main" onclick="verifyICO()">Pokračovat</button>
+    </div>
+
+    <!-- 2 – původní 1 -->
+    <div class="question" id="q2">
+        <h3>2. Co Vaše firma zajišťuje?</h3>
         <div class="answers">
             <button onclick="answer('firma_zajistuje','IT spravu')">IT správu</button>
             <button onclick="answer('firma_zajistuje','Vyvoj aplikaci')">Vývoj aplikací</button>
@@ -118,9 +143,9 @@
         </div>
     </div>
 
-    <!-- 2 -->
-    <div class="question" id="q2">
-        <h3>2. Jak často spravujete firemní zařízení?</h3>
+    <!-- 3 – původní 2 -->
+    <div class="question" id="q3">
+        <h3>3. Jak často spravujete firemní zařízení?</h3>
         <div class="answers">
             <button onclick="answer('sprava_zarizeni','Denne')">Denně</button>
             <button onclick="answer('sprava_zarizeni','Do tydne')">Do týdne</button>
@@ -128,16 +153,16 @@
         </div>
     </div>
 
-    <!-- 3 -->
-    <div class="question" id="q3">
-        <h3>3. Název společnosti:</h3>
-        <input type="text" placeholder="Zadejte název společnosti" oninput="answers.nazev_spolecnosti = this.value">
+    <!-- 4 – původní 3, ale název společnosti už bereme z IČO, tak jen umožníme přepsat/doplnit -->
+    <div class="question" id="q4">
+        <h3>4. Název společnosti:</h3>
+        <input type="text" id="nazevInput" placeholder="Zadejte název společnosti" oninput="answers.nazev_spolecnosti = this.value">
         <button class="main" onclick="nextQuestion()">Pokračovat</button>
     </div>
 
-    <!-- 4 -->
-    <div class="question" id="q4">
-        <h3>4. Kolik máte současně ve firmě zařízení?</h3>
+    <!-- 5 – původní 4 -->
+    <div class="question" id="q5">
+        <h3>5. Kolik máte současně ve firmě zařízení?</h3>
         <div class="answers">
             <button onclick="answer('pocet_zarizeni','1–10')">1–10</button>
             <button onclick="answer('pocet_zarizeni','11–50')">11–50</button>
@@ -145,9 +170,9 @@
         </div>
     </div>
 
-    <!-- 5 -->
-    <div class="question" id="q5">
-        <h3>5. Kolik máte zaměstnanců?</h3>
+    <!-- 6 – původní 5 -->
+    <div class="question" id="q6">
+        <h3>6. Kolik máte zaměstnanců?</h3>
         <div class="answers">
             <button onclick="answer('pocet_zamestnancu','1–10')">1–10</button>
             <button onclick="answer('pocet_zamestnancu','11–50')">11–50</button>
@@ -156,16 +181,16 @@
         </div>
     </div>
 
-    <!-- 6 -->
-    <div class="question" id="q6">
-        <h3>6. Vaše jméno:</h3>
+    <!-- 7 – původní 6 -->
+    <div class="question" id="q7">
+        <h3>7. Vaše jméno:</h3>
         <input type="text" placeholder="Zadejte své jméno" oninput="answers.jmeno = this.value">
         <button class="main" onclick="nextQuestion()">Pokračovat</button>
     </div>
 
-    <!-- 7 -->
-    <div class="question" id="q7">
-        <h3>7. Váš e‑mail:</h3>
+    <!-- 8 – původní 7 -->
+    <div class="question" id="q8">
+        <h3>8. Váš e‑mail:</h3>
         <input type="email" placeholder="Zadejte svůj e‑mail" oninput="answers.email = this.value">
         <button class="main" onclick="finish()">Odeslat</button>
     </div>
@@ -193,6 +218,67 @@ function evaluate(answers) {
     if (answers.pocet_zamestnancu === "1–10" && answers.pocet_zarizeni === "1–10") return "A";
     if (answers.pocet_zamestnancu === "11–50" || answers.pocet_zarizeni === "11–50") return "B";
     return "C";
+}
+
+async function verifyICO() {
+    const icoInput = document.getElementById("icoInput");
+    const ico = icoInput.value.trim();
+    const errorEl = document.getElementById("icoError");
+    const companyBox = document.getElementById("companyName");
+
+    errorEl.style.display = "none";
+    companyBox.style.display = "none";
+
+    if (!/^[0-9]{8}$/.test(ico)) {
+        errorEl.textContent = "IČO musí mít 8 číslic.";
+        errorEl.style.display = "block";
+        return;
+    }
+
+    try {
+        // Uprav si URL a hlavičky podle skutečného API justice.cz
+        const res = await fetch(`https://www.justice.cz/api/obchodni-rejstrik/${ico}`, {
+            headers: {
+                "Accept": "application/json",
+                "Authorization": "Bearer TVŮJ_API_KLÍČ"
+            }
+        });
+
+        if (!res.ok) {
+            throw new Error("not_found");
+        }
+
+        const data = await res.json();
+
+        if (!data || !data.obchodniJmeno) {
+            throw new Error("invalid");
+        }
+
+        const nazev = data.obchodniJmeno;
+
+        // uložíme do odpovědí
+        answers.ico = ico;
+        answers.nazev_spolecnosti = nazev;
+
+        // zobrazíme název firmy
+        companyBox.textContent = "Nalezená společnost: " + nazev;
+        companyBox.style.display = "block";
+
+        // předvyplníme pole v otázce 4, aby šlo případně upravit
+        const nazevInput = document.getElementById("nazevInput");
+        if (nazevInput) {
+            nazevInput.value = nazev;
+        }
+
+        // krátká pauza a pokračujeme na další otázku
+        setTimeout(() => {
+            nextQuestion();
+        }, 1200);
+
+    } catch (e) {
+        errorEl.textContent = "IČO nebylo nalezeno v obchodním rejstříku.";
+        errorEl.style.display = "block";
+    }
 }
 
 function finish() {
