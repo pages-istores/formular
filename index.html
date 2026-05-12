@@ -190,7 +190,7 @@
 
     <!-- 2 -->
     <div class="question" id="q2">
-        <h3>2. Co Vaše firma zajišťuje?</h3>
+        <h3>2. Co Vaše firma nabízí?</h3>
 
         <div class="answers">
             <button onclick="answer('firma_zajistuje','IT spravu')">
@@ -234,27 +234,31 @@
     </div>
 
     <!-- 4 -->
-    <div class="question" id="q4">
+    <div class="question" id="q5">
 
-        <h3>4. Název společnosti</h3>
+        <h3>5. Kolik máte auktuálně zařízení?</h3>
 
-        <input
-            type="text"
-            id="nazevInput"
-            placeholder="Název společnosti"
-            oninput="answers.nazev_spolecnosti = this.value"
-        />
+        <div class="answers">
 
-        <button class="main" onclick="nextQuestion()">
-            Pokračovat
-        </button>
+            <button onclick="answer('pocet_zarizeni','1-10')">
+                1–10
+            </button>
 
+            <button onclick="answer('pocet_zarizeni','11-50')">
+                11–50
+            </button>
+
+            <button onclick="answer('pocet_zarizeni','51-200')">
+                51–200
+            </button>
+
+        </div>
     </div>
 
     <!-- 5 -->
-    <div class="question" id="q5">
+    <div class="question" id="q6">
 
-        <h3>5. Kolik máte zařízení?</h3>
+        <h3>6. Kolik plánujete zařízení do budoucna?</h3>
 
         <div class="answers">
 
@@ -274,32 +278,6 @@
     </div>
 
     <!-- 6 -->
-    <div class="question" id="q6">
-
-        <h3>6. Kolik máte zaměstnanců?</h3>
-
-        <div class="answers">
-
-            <button onclick="answer('pocet_zamestnancu','1-10')">
-                1–10
-            </button>
-
-            <button onclick="answer('pocet_zamestnancu','11-50')">
-                11–50
-            </button>
-
-            <button onclick="answer('pocet_zamestnancu','51-200')">
-                51–200
-            </button>
-
-            <button onclick="answer('pocet_zamestnancu','200+')">
-                200+
-            </button>
-
-        </div>
-    </div>
-
-    <!-- 7 -->
     <div class="question" id="q7">
 
         <h3>7. Vaše jméno</h3>
@@ -316,7 +294,7 @@
 
     </div>
 
-    <!-- 8 -->
+    <!-- 7 -->
     <div class="question" id="q8">
 
         <h3>8. Váš e-mail</h3>
@@ -368,14 +346,14 @@
     function evaluate(answers) {
 
         if (
-            answers.pocet_zamestnancu === "1-10" &&
+            answers.pocet_zarizeni === "1-10" &&
             answers.pocet_zarizeni === "1-10"
         ) {
             return "A";
         }
 
         if (
-            answers.pocet_zamestnancu === "11-50" ||
+            answers.pocet_zarizeni === "11-50" ||
             answers.pocet_zarizeni === "11-50"
         ) {
             return "B";
@@ -422,7 +400,7 @@
         errorEl.style.display = "none";
         companyBox.style.display = "none";
 
-        // jen čísla
+       
         if (!/^\d{8}$/.test(ico)) {
 
             errorEl.textContent =
@@ -433,7 +411,7 @@
             return;
         }
 
-        // kontrolní součet
+        
         if (!isValidICO(ico)) {
 
             errorEl.textContent =
@@ -470,19 +448,19 @@
                 throw new Error("Chybí název firmy");
             }
 
-            // uložíme odpovědi
+           
             answers.ico = ico;
 
             answers.nazev_spolecnosti = companyName;
 
-            // zobrazíme název firmy
+           
             companyBox.innerHTML =
                 "<strong>Nalezená společnost:</strong><br>" +
                 companyName;
 
             companyBox.style.display = "block";
 
-            // předvyplníme další pole
+            
             const nazevInput =
                 document.getElementById("nazevInput");
 
@@ -490,7 +468,7 @@
                 nazevInput.value = companyName;
             }
 
-            // přechod na další otázku
+            
             setTimeout(() => {
                 nextQuestion();
             }, 1200);
