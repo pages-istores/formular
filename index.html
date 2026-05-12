@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>Firemní dotazník</title>
 
 <style>
@@ -29,12 +30,18 @@
 
     .question.active {
         display: block;
-        animation: fadeIn 0.4s ease;
+        animation: fadeIn 0.35s ease;
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     h2 {
@@ -85,6 +92,11 @@
         background: #1d4ed8;
     }
 
+    button.main:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
     input {
         width: 100%;
         padding: 14px;
@@ -93,6 +105,7 @@
         font-size: 16px;
         margin-top: 10px;
         transition: 0.2s;
+        box-sizing: border-box;
     }
 
     input:focus {
@@ -103,201 +116,466 @@
 
     .error {
         color: #b91c1c;
-        margin-top: 8px;
+        margin-top: 10px;
         font-size: 14px;
         display: none;
     }
 
-    #companyName {
-        margin-top: 12px;
-        padding: 10px 12px;
-        border-radius: 8px;
-        background: #f3f4f6;
-        font-size: 15px;
+    .success-box {
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 10px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1e3a8a;
         display: none;
+    }
+
+    .loading {
+        margin-top: 12px;
+        color: #2563eb;
+        display: none;
+        font-size: 14px;
+    }
+
+    #result {
+        text-align: center;
+    }
+
+    #result h3 {
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+
+    #result p {
+        font-size: 17px;
+        line-height: 1.6;
     }
 </style>
 </head>
 
 <body>
+
 <div class="container">
+
     <h2>Firemní dotazník</h2>
 
-    <!-- 1 – NOVÁ OTÁZKA NA IČO -->
+    <!-- 1 -->
     <div class="question active" id="q1">
-        <h3>1. IČO společnosti:</h3>
-        <input type="text" id="icoInput" placeholder="Zadejte IČO (8 číslic)">
+
+        <h3>1. IČO společnosti</h3>
+
+        <input
+            type="text"
+            id="icoInput"
+            placeholder="Zadejte IČO (8 číslic)"
+            maxlength="8"
+            inputmode="numeric"
+            onkeypress="if(event.key === 'Enter') verifyICO()"
+        />
+
+        <div class="loading" id="loadingText">
+            Ověřuji IČO...
+        </div>
+
         <div class="error" id="icoError"></div>
-        <div id="companyName"></div>
-        <button class="main" onclick="verifyICO()">Pokračovat</button>
+
+        <div class="success-box" id="companyName"></div>
+
+        <button class="main" id="icoButton" onclick="verifyICO()">
+            Pokračovat
+        </button>
+
     </div>
 
-    <!-- 2 – původní 1 -->
+    <!-- 2 -->
     <div class="question" id="q2">
         <h3>2. Co Vaše firma zajišťuje?</h3>
+
         <div class="answers">
-            <button onclick="answer('firma_zajistuje','IT spravu')">IT správu</button>
-            <button onclick="answer('firma_zajistuje','Vyvoj aplikaci')">Vývoj aplikací</button>
-            <button onclick="answer('firma_zajistuje','Kancelarskou praci')">Kancelářskou práci</button>
-            <button onclick="answer('firma_zajistuje','Sluzby')">Služby</button>
+            <button onclick="answer('firma_zajistuje','IT spravu')">
+                IT správu
+            </button>
+
+            <button onclick="answer('firma_zajistuje','Vyvoj aplikaci')">
+                Vývoj aplikací
+            </button>
+
+            <button onclick="answer('firma_zajistuje','Kancelarskou praci')">
+                Kancelářskou práci
+            </button>
+
+            <button onclick="answer('firma_zajistuje','Sluzby')">
+                Služby
+            </button>
         </div>
     </div>
 
-    <!-- 3 – původní 2 -->
+    <!-- 3 -->
     <div class="question" id="q3">
+
         <h3>3. Jak často spravujete firemní zařízení?</h3>
+
         <div class="answers">
-            <button onclick="answer('sprava_zarizeni','Denne')">Denně</button>
-            <button onclick="answer('sprava_zarizeni','Do tydne')">Do týdne</button>
-            <button onclick="answer('sprava_zarizeni','Do mesice')">Do měsíce</button>
+
+            <button onclick="answer('sprava_zarizeni','Denne')">
+                Denně
+            </button>
+
+            <button onclick="answer('sprava_zarizeni','Do tydne')">
+                Do týdne
+            </button>
+
+            <button onclick="answer('sprava_zarizeni','Do mesice')">
+                Do měsíce
+            </button>
+
         </div>
     </div>
 
-    <!-- 4 – původní 3, ale název společnosti už bereme z IČO, tak jen umožníme přepsat/doplnit -->
+    <!-- 4 -->
     <div class="question" id="q4">
-        <h3>4. Název společnosti:</h3>
-        <input type="text" id="nazevInput" placeholder="Zadejte název společnosti" oninput="answers.nazev_spolecnosti = this.value">
-        <button class="main" onclick="nextQuestion()">Pokračovat</button>
+
+        <h3>4. Název společnosti</h3>
+
+        <input
+            type="text"
+            id="nazevInput"
+            placeholder="Název společnosti"
+            oninput="answers.nazev_spolecnosti = this.value"
+        />
+
+        <button class="main" onclick="nextQuestion()">
+            Pokračovat
+        </button>
+
     </div>
 
-    <!-- 5 – původní 4 -->
+    <!-- 5 -->
     <div class="question" id="q5">
-        <h3>5. Kolik máte současně ve firmě zařízení?</h3>
+
+        <h3>5. Kolik máte zařízení?</h3>
+
         <div class="answers">
-            <button onclick="answer('pocet_zarizeni','1–10')">1–10</button>
-            <button onclick="answer('pocet_zarizeni','11–50')">11–50</button>
-            <button onclick="answer('pocet_zarizeni','51–200')">51–200</button>
+
+            <button onclick="answer('pocet_zarizeni','1-10')">
+                1–10
+            </button>
+
+            <button onclick="answer('pocet_zarizeni','11-50')">
+                11–50
+            </button>
+
+            <button onclick="answer('pocet_zarizeni','51-200')">
+                51–200
+            </button>
+
         </div>
     </div>
 
-    <!-- 6 – původní 5 -->
+    <!-- 6 -->
     <div class="question" id="q6">
+
         <h3>6. Kolik máte zaměstnanců?</h3>
+
         <div class="answers">
-            <button onclick="answer('pocet_zamestnancu','1–10')">1–10</button>
-            <button onclick="answer('pocet_zamestnancu','11–50')">11–50</button>
-            <button onclick="answer('pocet_zamestnancu','51–200')">51–200</button>
-            <button onclick="answer('pocet_zamestnancu','200+')">200+</button>
+
+            <button onclick="answer('pocet_zamestnancu','1-10')">
+                1–10
+            </button>
+
+            <button onclick="answer('pocet_zamestnancu','11-50')">
+                11–50
+            </button>
+
+            <button onclick="answer('pocet_zamestnancu','51-200')">
+                51–200
+            </button>
+
+            <button onclick="answer('pocet_zamestnancu','200+')">
+                200+
+            </button>
+
         </div>
     </div>
 
-    <!-- 7 – původní 6 -->
+    <!-- 7 -->
     <div class="question" id="q7">
-        <h3>7. Vaše jméno:</h3>
-        <input type="text" placeholder="Zadejte své jméno" oninput="answers.jmeno = this.value">
-        <button class="main" onclick="nextQuestion()">Pokračovat</button>
+
+        <h3>7. Vaše jméno</h3>
+
+        <input
+            type="text"
+            placeholder="Zadejte své jméno"
+            oninput="answers.jmeno = this.value"
+        />
+
+        <button class="main" onclick="nextQuestion()">
+            Pokračovat
+        </button>
+
     </div>
 
-    <!-- 8 – původní 7 -->
+    <!-- 8 -->
     <div class="question" id="q8">
-        <h3>8. Váš e‑mail:</h3>
-        <input type="email" placeholder="Zadejte svůj e‑mail" oninput="answers.email = this.value">
-        <button class="main" onclick="finish()">Odeslat</button>
+
+        <h3>8. Váš e-mail</h3>
+
+        <input
+            type="email"
+            placeholder="Zadejte svůj e-mail"
+            oninput="answers.email = this.value"
+        />
+
+        <button class="main" onclick="finish()">
+            Odeslat
+        </button>
+
     </div>
 
-    <!-- Výsledek -->
+    <!-- výsledky -->
     <div class="question" id="result"></div>
+
 </div>
 
 <script>
-let current = 1;
-let answers = {};
+    let current = 1;
 
-function answer(key, value) {
-    answers[key] = value;
-    nextQuestion();
-}
+    let answers = {};
 
-function nextQuestion() {
-    document.getElementById("q" + current).classList.remove("active");
-    current++;
-    document.getElementById("q" + current).classList.add("active");
-}
-
-function evaluate(answers) {
-    if (answers.pocet_zamestnancu === "1–10" && answers.pocet_zarizeni === "1–10") return "A";
-    if (answers.pocet_zamestnancu === "11–50" || answers.pocet_zarizeni === "11–50") return "B";
-    return "C";
-}
-
-async function verifyICO() {
-    const icoInput = document.getElementById("icoInput");
-    const ico = icoInput.value.trim();
-    const errorEl = document.getElementById("icoError");
-    const companyBox = document.getElementById("companyName");
-
-    errorEl.style.display = "none";
-    companyBox.style.display = "none";
-
-    if (!/^[0-9]{8}$/.test(ico)) {
-        errorEl.textContent = "IČO musí mít 8 číslic.";
-        errorEl.style.display = "block";
-        return;
+    function answer(key, value) {
+        answers[key] = value;
+        nextQuestion();
     }
 
-    try {
-        // Uprav si URL a hlavičky podle skutečného API justice.cz
-        const res = await fetch(`https://www.justice.cz/api/obchodni-rejstrik/${ico}`, {
-            headers: {
-                "Accept": "application/json",
-                "Authorization": "Bearer TVŮJ_API_KLÍČ"
+    function nextQuestion() {
+
+        const currentEl = document.getElementById("q" + current);
+
+        if (currentEl) {
+            currentEl.classList.remove("active");
+        }
+
+        current++;
+
+        const nextEl = document.getElementById("q" + current);
+
+        if (nextEl) {
+            nextEl.classList.add("active");
+        }
+    }
+
+    function evaluate(answers) {
+
+        if (
+            answers.pocet_zamestnancu === "1-10" &&
+            answers.pocet_zarizeni === "1-10"
+        ) {
+            return "A";
+        }
+
+        if (
+            answers.pocet_zamestnancu === "11-50" ||
+            answers.pocet_zarizeni === "11-50"
+        ) {
+            return "B";
+        }
+
+        return "C";
+    }
+
+    function isValidICO(ico) {
+
+        if (!/^\d{8}$/.test(ico)) {
+            return false;
+        }
+
+        let sum = 0;
+
+        for (let i = 0; i < 7; i++) {
+            sum += parseInt(ico[i]) * (8 - i);
+        }
+
+        let mod = sum % 11;
+        let check = 11 - mod;
+
+        if (check === 10) check = 0;
+        if (check === 11) check = 1;
+
+        return check === parseInt(ico[7]);
+    }
+
+    async function verifyICO() {
+
+        const icoInput = document.getElementById("icoInput");
+
+        const ico = icoInput.value.trim();
+
+        const errorEl = document.getElementById("icoError");
+
+        const companyBox = document.getElementById("companyName");
+
+        const loadingEl = document.getElementById("loadingText");
+
+        const button = document.getElementById("icoButton");
+
+        errorEl.style.display = "none";
+        companyBox.style.display = "none";
+
+        // jen čísla
+        if (!/^\d{8}$/.test(ico)) {
+
+            errorEl.textContent =
+                "IČO musí obsahovat přesně 8 číslic.";
+
+            errorEl.style.display = "block";
+
+            return;
+        }
+
+        // kontrolní součet
+        if (!isValidICO(ico)) {
+
+            errorEl.textContent =
+                "Zadané IČO není validní.";
+
+            errorEl.style.display = "block";
+
+            return;
+        }
+
+        loadingEl.style.display = "block";
+
+        button.disabled = true;
+
+        try {
+
+            // ARES API
+            const response = await fetch(
+                `https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/${ico}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Firma nebyla nalezena");
             }
-        });
 
-        if (!res.ok) {
-            throw new Error("not_found");
+            const data = await response.json();
+
+            const companyName = data.obchodniJmeno;
+
+            if (!companyName) {
+                throw new Error("Chybí název firmy");
+            }
+
+            // uložíme odpovědi
+            answers.ico = ico;
+
+            answers.nazev_spolecnosti = companyName;
+
+            // zobrazíme název firmy
+            companyBox.innerHTML =
+                "<strong>Nalezená společnost:</strong><br>" +
+                companyName;
+
+            companyBox.style.display = "block";
+
+            // předvyplníme další pole
+            const nazevInput =
+                document.getElementById("nazevInput");
+
+            if (nazevInput) {
+                nazevInput.value = companyName;
+            }
+
+            // přechod na další otázku
+            setTimeout(() => {
+                nextQuestion();
+            }, 1200);
+
+        } catch (error) {
+
+            console.error(error);
+
+            errorEl.textContent =
+                "IČO nebylo nalezeno v registru ARES.";
+
+            errorEl.style.display = "block";
+
+        } finally {
+
+            loadingEl.style.display = "none";
+
+            button.disabled = false;
         }
-
-        const data = await res.json();
-
-        if (!data || !data.obchodniJmeno) {
-            throw new Error("invalid");
-        }
-
-        const nazev = data.obchodniJmeno;
-
-        // uložíme do odpovědí
-        answers.ico = ico;
-        answers.nazev_spolecnosti = nazev;
-
-        // zobrazíme název firmy
-        companyBox.textContent = "Nalezená společnost: " + nazev;
-        companyBox.style.display = "block";
-
-        // předvyplníme pole v otázce 4, aby šlo případně upravit
-        const nazevInput = document.getElementById("nazevInput");
-        if (nazevInput) {
-            nazevInput.value = nazev;
-        }
-
-        // krátká pauza a pokračujeme na další otázku
-        setTimeout(() => {
-            nextQuestion();
-        }, 1200);
-
-    } catch (e) {
-        errorEl.textContent = "IČO nebylo nalezeno v obchodním rejstříku.";
-        errorEl.style.display = "block";
     }
-}
 
-function finish() {
-    fetch("/api/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(answers)
-    });
+    async function finish() {
 
-    const result = evaluate(answers);
+        try {
 
-    document.getElementById("q" + current).classList.remove("active");
-    const resultBox = document.getElementById("result");
-    resultBox.classList.add("active");
+            // pokud máš backend
+            await fetch("/api/save", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(answers)
+            });
 
-    if (result === "A") resultBox.innerHTML = "<h3>Balíček: Apple Business START</h3><p>Balíček je vhodný pro menší tým.</p>";
-    if (result === "B") resultBox.innerHTML = "<h3>Balíček: Apple Business READY</h3><p>Balíček je vhodný pro malé a střední firmy.</p>";
-    if (result === "C") resultBox.innerHTML = "<h3>Balíček: Apple Business GUARD</h3><p>Bylíček je vhodný pro střední a větší firmy, které preferují zabezpečení.</p>";
-}
+        } catch (e) {
+
+            console.warn("Nepodařilo se uložit data:", e);
+        }
+
+        const result = evaluate(answers);
+
+        const currentEl =
+            document.getElementById("q" + current);
+
+        if (currentEl) {
+            currentEl.classList.remove("active");
+        }
+
+        const resultBox =
+            document.getElementById("result");
+
+        resultBox.classList.add("active");
+
+        if (result === "A") {
+
+            resultBox.innerHTML = `
+                <h3>Apple Business START</h3>
+                <p>
+                    Balíček je vhodný pro menší tým
+                    a základní firemní infrastrukturu.
+                </p>
+            `;
+        }
+
+        if (result === "B") {
+
+            resultBox.innerHTML = `
+                <h3>Apple Business READY</h3>
+                <p>
+                    Balíček je vhodný pro malé
+                    a střední firmy.
+                </p>
+            `;
+        }
+
+        if (result === "C") {
+
+            resultBox.innerHTML = `
+                <h3>Apple Business GUARD</h3>
+                <p>
+                    Balíček je vhodný pro větší firmy,
+                    které preferují vyšší úroveň zabezpečení.
+                </p>
+            `;
+        }
+
+        console.log("Odpovědi:", answers);
+    }
 </script>
 
 </body>
