@@ -461,7 +461,10 @@
 
             const data = await response.json();
 
-            const companyName = data.obchodniJmeno;
+            const companyName = 
+                data.obchodniJmeno ||
+                data.obchodniFirma ||
+                data.nazev
 
             if (!companyName) {
                 throw new Error("Chybí název firmy");
