@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Firemní dotazník</title>
+<title>SMB Discovery</title>
 
 <style>
     body {
@@ -68,6 +68,7 @@
         font-size: 16px;
         cursor: pointer;
         transition: 0.2s;
+        text-align: left;
     }
 
     .answers button:hover {
@@ -151,19 +152,25 @@
         font-size: 17px;
         line-height: 1.6;
     }
+
+    label {
+        display: block;
+        margin-top: 15px;
+        font-size: 15px;
+        font-weight: 500;
+    }
 </style>
 </head>
-
 <body>
 
 <div class="container">
 
-    <h2>Firemní dotazník</h2>
+    <h2>SMB Discovery</h2>
 
-    <!-- 1 -->
+    <!-- 1: IČO -->
     <div class="question active" id="q1">
 
-        <h3>1. IČO společnosti</h3>
+        <h3>IČO společnosti</h3>
 
         <input
             type="text"
@@ -188,99 +195,120 @@
 
     </div>
 
-    <!-- 2 -->
+    <!-- 2: Otázka 1 – hlavní cíl (trigger) -->
     <div class="question" id="q2">
-        <h3>2. Co Vaše firma nabízí?</h3>
+        <h3>1. Jaký je váš hlavní cíl, který teď u nových Apple zařízení řešíte?</h3>
 
         <div class="answers">
-            <button onclick="answer('firma_zajistuje','IT spravu')">
-                IT správu
+            <button onclick="answer('cil','A')">
+                Chceme hlavně začít nakupovat zařízení oficiálně na firmu, propojit je pod jeden firemní účet a mít v tom pořádek, ale instalace aplikací si zatím vyřešíme sami.
             </button>
 
-            <button onclick="answer('firma_zajistuje','Vyvoj aplikaci')">
-                Vývoj aplikací
+            <button onclick="answer('cil','B')">
+                Potřebujeme, aby zaměstnanec dostal krabici, rozbalil ji a zařízení se samo na dálku kompletně nastavilo (Wi-Fi, firemní pošta, aplikace), aniž by to musel kdokoli zdlouhavě instalovat ručně.
             </button>
 
-            <button onclick="answer('firma_zajistuje','Kancelarskou praci')">
-                Kancelářskou práci
+            <button onclick="answer('cil','C')">
+                Chceme mít jistotu, že firemní data budou v bezpečí, zařízení budou zašifrovaná a chráněná, ale nemáme vlastní IT oddělení, které by to hlídalo.
             </button>
 
-            <button onclick="answer('firma_zajistuje','Sluzby')">
-                Služby
+            <button onclick="answer('cil','D')">
+                Hardwaru a nastavení rozumíme, ale naši lidé (nebo já) s Macem teprve začínají, případně přecházejí z Windows a potřebují se s ním naučit pracovat efektivně.
             </button>
         </div>
     </div>
 
-    <!-- 3 -->
+    <!-- 3: Otázka 2 – správa účtů -->
     <div class="question" id="q3">
-
-        <h3>3. Jak často spravujete firemní zařízení?</h3>
+        <h3>2. Jak ve firmě momentálně funguje správa uživatelských účtů a dokumentů?</h3>
 
         <div class="answers">
-
-            <button onclick="answer('sprava_zarizeni','Denne')">
-                Denně
+            <button onclick="answer('sprava_uctu','A')">
+                Zatím nijak – každý si vytváří své osobní Apple ID podle sebe.
             </button>
 
-            <button onclick="answer('sprava_zarizeni','Do tydne')">
-                Do týdne
+            <button onclick="answer('sprava_uctu','B')">
+                Používáme jiné cloudové firemní prostředí (např. Microsoft 365, Google Workspace nebo iCloud pro firmy).
             </button>
 
-            <button onclick="answer('sprava_zarizeni','Do mesice')">
-                Do měsíce
+            <button onclick="answer('sprava_uctu','C')">
+                Toto máme vyřešené, ale lidé bojují s produktivitou, klávesovými zkratkami nebo aplikacemi Office na systému macOS.
             </button>
-
         </div>
     </div>
 
-    <!-- 4 -->
+    <!-- 4: Otázka 3 – čísla / procenta -->
     <div class="question" id="q4">
+        <h3>3. Současný stav a plány v ekosystému</h3>
 
-        <h3>5. Kolik máte auktuálně zařízení?</h3>
+        <label>Kolik Apple zařízení (Mac, iPhone, iPad) aktuálně ve firmě používáte?</label>
+        <input
+            type="number"
+            min="0"
+            id="appleNowInput"
+            oninput="answers.apple_now = this.value"
+            placeholder="Zadejte číslo"
+        />
 
-        <div class="answers">
+        <label>Plánujete v nejbližších 6–12 měsících rozšiřovat tým nebo obměňovat hardware? (přibližně kolik ks?)</label>
+        <input
+            type="number"
+            min="0"
+            id="appleFutureInput"
+            oninput="answers.apple_future = this.value"
+            placeholder="Zadejte číslo"
+        />
 
-            <button onclick="answer('pocet_zarizeni','1-10')">
-                1–10
-            </button>
+        <label>Jaký podíl ve vaší firmě tvoří platforma Windows (v %)?</label>
+        <input
+            type="number"
+            min="0"
+            max="100"
+            id="windowsPctInput"
+            oninput="answers.windows_pct = this.value"
+            placeholder="0–100"
+        />
 
-            <button onclick="answer('pocet_zarizeni','11-50')">
-                11–50
-            </button>
+        <label>Jaký podíl ve vaší firmě tvoří platforma Apple (v %)?</label>
+        <input
+            type="number"
+            min="0"
+            max="100"
+            id="applePctInput"
+            oninput="answers.apple_pct = this.value"
+            placeholder="0–100"
+        />
 
-            <button onclick="answer('pocet_zarizeni','51-200')">
-                51–200
-            </button>
+        <div class="error" id="numbersError"></div>
 
-        </div>
+        <button class="main" onclick="validateNumbersAndNext()">
+            Pokračovat
+        </button>
     </div>
 
-    <!-- 5 -->
+    <!-- 5: Otázka 4 – ekosystém -->
     <div class="question" id="q5">
-
-        <h3>6. Kolik plánujete zařízení do budoucna?</h3>
+        <h3>4. Na jaké platformě běží vaše firemní e-maily a úložiště?</h3>
 
         <div class="answers">
-
-            <button onclick="answer('pocet_zarizeni','1-10')">
-                1–10
+            <button onclick="answer('ekosystem','Microsoft 365')">
+                Microsoft 365 (Teams, OneDrive)
             </button>
 
-            <button onclick="answer('pocet_zarizeni','11-50')">
-                11–50
+            <button onclick="answer('ekosystem','Google Workspace')">
+                Google Workspace (Meet, Disk)
             </button>
 
-            <button onclick="answer('pocet_zarizeni','51-200')">
-                51–200
+            <button onclick="answer('ekosystem','Jine')">
+                Jiné / Vlastní řešení / Seznam / iCloud
             </button>
-
         </div>
     </div>
 
-    <!-- 6 -->
+    <!-- 6: Jméno -->
     <div class="question" id="q6">
 
-        <h3>7. Vaše jméno</h3>
+        <h3>Vaše jméno</h3>
 
         <input
             type="text"
@@ -294,10 +322,10 @@
 
     </div>
 
-    <!-- 7 -->
+    <!-- 7: E-mail -->
     <div class="question" id="q7">
 
-        <h3>8. Váš e-mail</h3>
+        <h3>Váš e-mail</h3>
 
         <input
             type="email"
@@ -318,7 +346,6 @@
 
 <script>
     let current = 1;
-
     let answers = {};
 
     function answer(key, value) {
@@ -327,9 +354,7 @@
     }
 
     function nextQuestion() {
-
         const currentEl = document.getElementById("q" + current);
-
         if (currentEl) {
             currentEl.classList.remove("active");
         }
@@ -337,39 +362,65 @@
         current++;
 
         const nextEl = document.getElementById("q" + current);
-
         if (nextEl) {
             nextEl.classList.add("active");
         }
     }
 
+    function validateNumbersAndNext() {
+        const errorEl = document.getElementById("numbersError");
+        errorEl.style.display = "none";
+        errorEl.textContent = "";
+
+        const appleNow = document.getElementById("appleNowInput").value;
+        const appleFuture = document.getElementById("appleFutureInput").value;
+        const windowsPct = document.getElementById("windowsPctInput").value;
+        const applePct = document.getElementById("applePctInput").value;
+
+        if (
+            (appleNow && Number(appleNow) < 0) ||
+            (appleFuture && Number(appleFuture) < 0) ||
+            (windowsPct && (Number(windowsPct) < 0 || Number(windowsPct) > 100)) ||
+            (applePct && (Number(applePct) < 0 || Number(applePct) > 100))
+        ) {
+            errorEl.textContent = "Zkontrolujte prosím zadané hodnoty. Čísla musí být nezáporná, procenta mezi 0–100.";
+            errorEl.style.display = "block";
+            return;
+        }
+
+        if (windowsPct !== "" && applePct !== "") {
+            const sum = Number(windowsPct) + Number(applePct);
+            if (sum !== 100) {
+                errorEl.textContent = "Součet podílů Windows a Apple musí být 100 %.";
+                errorEl.style.display = "block";
+                return;
+            }
+        }
+
+        nextQuestion();
+    }
+
     function evaluate(answers) {
-
-        if (
-            answers.pocet_zarizeni === "1-10" &&
-            answers.pocet_zarizeni === "1-10"
-        ) {
-            return "A";
+        switch (answers.cil) {
+            case "A":
+                return "START";
+            case "B":
+                return "READY";
+            case "C":
+                return "GUARD";
+            case "D":
+                return "SKOLENI";
+            default:
+                return "UNKNOWN";
         }
-
-        if (
-            answers.pocet_zarizeni === "11-50" ||
-            answers.pocet_zarizeni === "11-50"
-        ) {
-            return "B";
-        }
-
-        return "C";
     }
 
     function isValidICO(ico) {
-
         if (!/^\d{8}$/.test(ico)) {
             return false;
         }
 
         let sum = 0;
-
         for (let i = 0; i < 7; i++) {
             sum += parseInt(ico[i]) * (8 - i);
         }
@@ -384,51 +435,32 @@
     }
 
     async function verifyICO() {
-
         const icoInput = document.getElementById("icoInput");
-
         const ico = icoInput.value.trim();
-
         const errorEl = document.getElementById("icoError");
-
         const companyBox = document.getElementById("companyName");
-
         const loadingEl = document.getElementById("loadingText");
-
         const button = document.getElementById("icoButton");
 
         errorEl.style.display = "none";
         companyBox.style.display = "none";
 
-       
         if (!/^\d{8}$/.test(ico)) {
-
-            errorEl.textContent =
-                "IČO musí obsahovat přesně 8 číslic.";
-
+            errorEl.textContent = "IČO musí obsahovat přesně 8 číslic.";
             errorEl.style.display = "block";
-
             return;
         }
 
-        
         if (!isValidICO(ico)) {
-
-            errorEl.textContent =
-                "Zadané IČO není validní.";
-
+            errorEl.textContent = "Zadané IČO není validní.";
             errorEl.style.display = "block";
-
             return;
         }
 
         loadingEl.style.display = "block";
-
         button.disabled = true;
 
         try {
-
-            // ARES API
             const response = await fetch(
                 `https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/${ico}`
             );
@@ -439,62 +471,41 @@
 
             const data = await response.json();
 
-            const companyName = 
+            const companyName =
                 data.obchodniJmeno ||
                 data.obchodniFirma ||
-                data.nazev
+                data.nazev;
 
             if (!companyName) {
                 throw new Error("Chybí název firmy");
             }
 
-           
             answers.ico = ico;
-
             answers.nazev_spolecnosti = companyName;
 
-           
             companyBox.innerHTML =
                 "<strong>Nalezená společnost:</strong><br>" +
                 companyName;
 
             companyBox.style.display = "block";
 
-            
-            const nazevInput =
-                document.getElementById("nazevInput");
-
-            if (nazevInput) {
-                nazevInput.value = companyName;
-            }
-
-            
             setTimeout(() => {
                 nextQuestion();
             }, 1200);
 
         } catch (error) {
-
             console.error(error);
-
             errorEl.textContent =
                 "IČO nebylo nalezeno v registru ARES.";
-
             errorEl.style.display = "block";
-
         } finally {
-
             loadingEl.style.display = "none";
-
             button.disabled = false;
         }
     }
 
     async function finish() {
-
         try {
-
-            // pokud máš backend
             await fetch("/api/save", {
                 method: "POST",
                 headers: {
@@ -502,55 +513,69 @@
                 },
                 body: JSON.stringify(answers)
             });
-
         } catch (e) {
-
             console.warn("Nepodařilo se uložit data:", e);
         }
 
         const result = evaluate(answers);
 
-        const currentEl =
-            document.getElementById("q" + current);
-
+        const currentEl = document.getElementById("q" + current);
         if (currentEl) {
             currentEl.classList.remove("active");
         }
 
-        const resultBox =
-            document.getElementById("result");
-
+        const resultBox = document.getElementById("result");
         resultBox.classList.add("active");
 
-        if (result === "A") {
-
+        if (result === "START") {
             resultBox.innerHTML = `
                 <h3>Apple Business START</h3>
                 <p>
-                    Balíček je vhodný pro menší tým
-                    a kontrolu firemních zařízení.
+                    Tento balíček je pro vás ideální základní stavební kámen.
+                    Oficiálně zaregistrujeme vaši firmu u Applu a propojíme ji s naším obchodem.
+                    Už nikdy nebudete muset kupovat Macy na rodná čísla a získáte plnou kontrolu nad firemními účty.
                 </p>
             `;
         }
 
-        if (result === "B") {
-
+        if (result === "READY") {
             resultBox.innerHTML = `
                 <h3>Apple Business READY</h3>
                 <p>
-                    Balíček je vhodný pro malé
-                    a střední firmy, které preferují hromadný nákup aplikací a základní správu firemních zařízení.
+                    Doporučuji balíček READY. Vaše heslo bude „Vybalit. Zapnout. Hotovo.“
+                    Zařízení propojíme s cloudovým modelem (Apple/Google/Microsoft), který používáte,
+                    a jakýkoli nový Mac se po vybalení z fólie nakonfiguruje sám na dálku.
                 </p>
             `;
         }
 
-        if (result === "C") {
-
+        if (result === "GUARD") {
             resultBox.innerHTML = `
                 <h3>Apple Business GUARD</h3>
                 <p>
-                    Balíček je vhodný pro větší firmy,
-                    které preferují základní správu firemních zařízení, hromadný nákup aplikací a vyšší úroveň zabezpečení.
+                    Nejlepší volbou je GUARD. Získáte IT bezpečnost, která se nastaví sama.
+                    Nemusíte platit drahé externí IT – zařízení naklikáme do bezpečného režimu,
+                    ochráníme firemní data a vy můžete klidně spát.
+                </p>
+            `;
+        }
+
+        if (result === "SKOLENI") {
+            resultBox.innerHTML = `
+                <h3>Apple školení</h3>
+                <p>
+                    Podle vašich odpovědí hardware zvládáte, ale největší hodnotu pro vás teď bude mít zaškolení týmu.
+                    Vybereme konkrétní modul (např. Přechod z Windows nebo Produktivitu)
+                    a ukážeme vašim lidem, jak z Macu dostat maximum.
+                </p>
+            `;
+        }
+
+        if (result === "UNKNOWN") {
+            resultBox.innerHTML = `
+                <h3>Děkujeme za vyplnění</h3>
+                <p>
+                    Vaše odpovědi jsme uložili. SMB Champ s vámi projde nejvhodnější variantu spolupráce.
                 </p>
             `;
         }
