@@ -522,6 +522,12 @@
             console.warn("Nepodařilo se uložit data:", e);
         }
 
+         await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(answers)
+    });
+
         const result = evaluate(answers);
 
         const currentEl = document.getElementById("q" + current);
